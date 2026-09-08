@@ -1,8 +1,8 @@
 # Tarjetazo 💳 — TP 1 Arquitecturas Móviles
 
-Aplicación Android nativa (Kotlin) para gestionar tarjetas de crédito compartidas:
-registro de gastos con cuotas, dólares, impuesto de sello y división por persona, y
-cálculo de cuánto le debe cada uno al titular.
+Aplicación Android nativa (Kotlin) para los gastos de una tarjeta de crédito compartida:
+se registran los gastos, se dividen entre varias personas y la aplicación calcula cuánto
+le debe cada una al titular.
 
 Trabajo Práctico 1 — Arquitecturas Móviles, UTN FRSF, 2026. Prof. Ing. Juan Pablo Bono.
 
