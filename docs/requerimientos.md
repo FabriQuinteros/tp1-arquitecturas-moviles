@@ -24,11 +24,10 @@ y muestra cuánto debe cada una.
 Esta entrega es una aplicación Android nativa que funciona contra el almacenamiento del
 propio dispositivo, sin servidor. Registrar gastos, dividirlos y ver la deuda resultante.
 
-Queda afuera todo lo que exija backend —cuentas de usuario, invitar colaboradores,
-sincronizar entre dispositivos, aprobar gastos de terceros— y también las variantes que no
-agregan nada al objetivo del trabajo práctico: gastos en dólares, cuotas, impuesto de
-sello y categorías. El objetivo acá es el ciclo de vida de las Activities y la
-comunicación entre componentes, no el dominio financiero completo.
+Quedan para versiones posteriores las funciones que exigen un servidor —cuentas de
+usuario, invitar colaboradores, sincronizar entre dispositivos, aprobar gastos de
+terceros— y también los gastos en dólares, las cuotas, el impuesto de sello y las
+categorías.
 
 ## 3. Requerimientos funcionales
 
@@ -56,7 +55,7 @@ comunicación entre componentes, no el dominio financiero completo.
 
 ## 5. Limitaciones propias de la plataforma móvil
 
-Son las que condicionan el diseño, y lo que la guía del trabajo práctico pide identificar:
+Estas limitaciones condicionan el diseño:
 
 - **El sistema operativo puede destruir la aplicación en cualquier momento.** Android
   libera memoria cerrando procesos en segundo plano: el usuario que sale a mirar un
@@ -99,8 +98,7 @@ Son las que condicionan el diseño, y lo que la guía del trabajo práctico pide
 
 ### 6.4 Ciclo de vida
 
-Es el punto central del trabajo práctico. La carga de un gasto puede quedar a mitad de
-camino, y `GastoEditorActivity` responde así:
+La carga de un gasto puede quedar a mitad de camino. `GastoEditorActivity` responde así:
 
 | Evento | Qué hace la aplicación |
 |--------|------------------------|
@@ -109,16 +107,15 @@ camino, y `GastoEditorActivity` responde así:
 | `onPause` | Persiste el borrador en el almacenamiento local: es el último momento garantizado antes de que el sistema pueda terminar el proceso. Si el gasto ya se guardó o se canceló, lo vacía. |
 
 `GastoEditorActivity` se lanza esperando un resultado: `MainActivity` sigue viva debajo en
-la pila y se detiene (`onStop`) en lugar de destruirse. Es donde se ve la diferencia entre
-las dos cosas.
+la pila y se detiene (`onStop`) en lugar de destruirse.
 
 ## 7. Stack tecnológico
 
 | Capa | Elección | Motivo |
 |------|----------|--------|
 | Lenguaje | Kotlin | Lenguaje oficial de Android. |
-| Entorno | Android Studio | Requerido por la guía del trabajo práctico. |
-| Interfaz | Vistas XML con `ListView` | Componentes nativos de la plataforma, sin dependencias extra. Hace explícito el ciclo de vida de la Activity, que es lo que hay que demostrar. |
+| Entorno | Android Studio | Entorno oficial de Android, con emulador y depurador integrados. |
+| Interfaz | Vistas XML con `ListView` | Componentes nativos de la plataforma, sin dependencias extra. |
 | Importes | Aritmética decimal de precisión arbitraria | Exigido por RNF-3. |
 | Persistencia | `SharedPreferences` con JSON | Incluido en Android: alcanza para los gastos de una tarjeta y cubre RF-9 sin agregar dependencias. |
 | Construcción | Gradle | Estándar del ecosistema. |
@@ -126,8 +123,8 @@ las dos cosas.
 ## 8. Criterios de aceptación
 
 1. Se carga un gasto de 10.000,01 pesos dividido en 50 % y 50 % entre dos personas, y la
-   aplicación muestra 5.000,01 para la primera y 5.000,00 para la segunda: el centavo que
-   sobra tiene dueño y el total no se descuadra.
+   aplicación muestra 5.000,01 para la primera y 5.000,00 para la segunda, sin que el total
+   se descuadre.
 2. Con un gasto a medio cargar, se rota el dispositivo y no se pierde ningún campo.
 3. Se cierra la aplicación por completo y al volver a abrirla están todos los gastos y las
    deudas.
@@ -153,7 +150,7 @@ El código fuente está en <https://github.com/FabriQuinteros/tp1-arquitecturas-
 ### 9.1 Cómo observar el ciclo de vida
 
 En Android Studio, abrir **Logcat** y filtrar por `tag:Ciclo`. Cada Activity registra cada
-evento que recibe. Tres recorridos muestran lo central del trabajo práctico:
+evento que recibe. Tres recorridos para observarlo:
 
 - **Abrir el editor desde la lista:** `MainActivity` pasa por `onPause` y `onStop`, pero no
   por `onDestroy`: queda detenida debajo en la pila. Al volver, pasa por `onRestart`,
@@ -167,7 +164,7 @@ evento que recibe. Tres recorridos muestran lo central del trabajo práctico:
 
 ### 9.2 Evidencia de ejecución
 
-Capturas del emulador (Pixel 7, Android 17). Se cargó un gasto de 10.000,01 pesos dividido en 50 % y 50 % entre Ana y Beto, y otro de 4.500 pesos sin división. La pantalla de deudas muestra el centavo sobrante asignado a Ana, como pide el criterio de aceptación 1.
+Capturas del emulador (Pixel 7, Android 17). Se cargó un gasto de 10.000,01 pesos dividido en 50 % y 50 % entre Ana y Beto, y otro de 4.500 pesos sin división. La pantalla de deudas muestra el centavo sobrante asignado a Ana.
 
 ![Carga de un gasto](capturas/1-editor.png) ![Lista de gastos](capturas/2-lista.png) ![Deudas por persona](capturas/3-deudas.png)
 

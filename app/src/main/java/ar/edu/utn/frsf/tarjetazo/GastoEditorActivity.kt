@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 
 /**
- * Alta de un gasto. Acá está el ciclo de vida que pide el práctico:
+ * Alta de un gasto. Cómo responde al ciclo de vida:
  * - Rotación: el sistema destruye y recrea la Activity, y los EditText con id
  *   recuperan su texto solos a través de onSaveInstanceState.
  * - El usuario sale y el sistema mata el proceso: onPause ya dejó el borrador
