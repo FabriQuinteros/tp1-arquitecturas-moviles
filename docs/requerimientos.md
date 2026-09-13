@@ -76,7 +76,7 @@ Son las que condicionan el diseño, y lo que la guía del trabajo práctico pide
 | `GastoEditorActivity` | Activity | Alta de un gasto y su división por persona. |
 | `DeudasActivity` | Activity | Deuda por persona, con la acción de compartirla. |
 | Repositorio | Clase de datos | Único punto de lectura y escritura del almacenamiento local. |
-| Calculadora de deudas | Clase de dominio | Reparto de importes entre personas. Sin dependencias de Android, para poder probarla sin emulador. |
+| Dominio | Funciones de dominio | Reparto de importes entre personas. Sin dependencias de Android, para poder probarlo sin emulador. |
 
 ### 6.2 Navegación e Intents
 
@@ -157,8 +157,47 @@ evento que recibe. Tres recorridos muestran lo central del trabajo práctico:
   por `onDestroy`: queda detenida debajo en la pila. Al volver, pasa por `onRestart`,
   `onStart` y `onResume`.
 - **Rotar el dispositivo con un gasto a medio cargar:** `GastoEditorActivity` pasa por
-  `onPause`, `onSaveInstanceState`, `onStop` y `onDestroy`, y enseguida por un nuevo
+  `onPause`, `onStop`, `onSaveInstanceState` y `onDestroy`, y enseguida por un nuevo
   `onCreate (estado guardado: true)`. Los campos conservan lo escrito.
 - **Salir de la aplicación a mitad de carga y cerrarla desde recientes:** al volver a abrir
   el editor aparece `onCreate (estado guardado: false)` y el borrador está cargado igual,
   porque se persistió en `onPause`.
+
+### 9.2 Evidencia de ejecución
+
+Capturas del emulador (Pixel 7, Android 17). Se cargó un gasto de 10.000,01 pesos dividido en 50 % y 50 % entre Ana y Beto, y otro de 4.500 pesos sin división. La pantalla de deudas muestra el centavo sobrante asignado a Ana, como pide el criterio de aceptación 1.
+
+![Carga de un gasto](capturas/1-editor.png) ![Lista de gastos](capturas/2-lista.png) ![Deudas por persona](capturas/3-deudas.png)
+
+Editor rotado con un gasto a medio cargar: los campos conservan lo escrito.
+
+![Editor rotado](capturas/4-editor-rotado.png)
+
+Registro de Logcat (filtro `tag:Ciclo`) de ese tramo: desde la lista se abre el editor, se carga el gasto a medio camino, se rota a horizontal, se vuelve a vertical y se cancela. Cada rotación pasa por `onSaveInstanceState` y `onDestroy`, y la Activity se vuelve a crear con `onCreate (estado guardado: true)`. `MainActivity` nunca se destruye: queda detenida y vuelve con `onRestart`.
+
+    MainActivity.onPause
+    GastoEditorActivity.onCreate (estado guardado: false)
+    GastoEditorActivity.onStart
+    GastoEditorActivity.onResume
+    MainActivity.onStop
+    MainActivity.onSaveInstanceState
+    GastoEditorActivity.onPause
+    GastoEditorActivity.onStop
+    GastoEditorActivity.onSaveInstanceState
+    GastoEditorActivity.onDestroy
+    GastoEditorActivity.onCreate (estado guardado: true)
+    GastoEditorActivity.onStart
+    GastoEditorActivity.onResume
+    GastoEditorActivity.onPause
+    GastoEditorActivity.onStop
+    GastoEditorActivity.onSaveInstanceState
+    GastoEditorActivity.onDestroy
+    GastoEditorActivity.onCreate (estado guardado: true)
+    GastoEditorActivity.onStart
+    GastoEditorActivity.onResume
+    GastoEditorActivity.onPause
+    MainActivity.onRestart
+    MainActivity.onStart
+    MainActivity.onResume
+    GastoEditorActivity.onStop
+    GastoEditorActivity.onDestroy

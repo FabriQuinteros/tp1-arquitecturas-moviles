@@ -1,0 +1,65 @@
+D/Ciclo   : MainActivity.onCreate (estado guardado: false)
+D/Ciclo   : MainActivity.onStart
+D/Ciclo   : MainActivity.onResume
+D/Ciclo   : MainActivity.onPause
+D/Ciclo   : GastoEditorActivity.onCreate (estado guardado: false)
+D/Ciclo   : GastoEditorActivity.onStart
+D/Ciclo   : GastoEditorActivity.onResume
+D/Ciclo   : MainActivity.onStop
+D/Ciclo   : MainActivity.onSaveInstanceState
+D/Ciclo   : GastoEditorActivity.onPause
+D/Ciclo   : MainActivity.onRestart
+D/Ciclo   : MainActivity.onStart
+D/Ciclo   : MainActivity.onResume
+D/Ciclo   : GastoEditorActivity.onStop
+D/Ciclo   : GastoEditorActivity.onDestroy
+D/Ciclo   : MainActivity.onPause
+D/Ciclo   : GastoEditorActivity.onCreate (estado guardado: false)
+D/Ciclo   : GastoEditorActivity.onStart
+D/Ciclo   : GastoEditorActivity.onResume
+D/Ciclo   : MainActivity.onStop
+D/Ciclo   : MainActivity.onSaveInstanceState
+D/Ciclo   : GastoEditorActivity.onPause
+D/Ciclo   : MainActivity.onRestart
+D/Ciclo   : MainActivity.onStart
+D/Ciclo   : MainActivity.onResume
+D/Ciclo   : GastoEditorActivity.onStop
+D/Ciclo   : GastoEditorActivity.onDestroy
+D/Ciclo   : MainActivity.onPause
+D/Ciclo   : DeudasActivity.onCreate (estado guardado: false)
+D/Ciclo   : DeudasActivity.onStart
+D/Ciclo   : DeudasActivity.onResume
+D/Ciclo   : MainActivity.onStop
+D/Ciclo   : MainActivity.onSaveInstanceState
+D/Ciclo   : DeudasActivity.onPause
+D/Ciclo   : MainActivity.onRestart
+D/Ciclo   : MainActivity.onStart
+D/Ciclo   : MainActivity.onResume
+D/Ciclo   : DeudasActivity.onStop
+D/Ciclo   : DeudasActivity.onDestroy
+D/Ciclo   : MainActivity.onPause
+D/Ciclo   : GastoEditorActivity.onCreate (estado guardado: false)
+D/Ciclo   : GastoEditorActivity.onStart
+D/Ciclo   : GastoEditorActivity.onResume
+D/Ciclo   : MainActivity.onStop
+D/Ciclo   : MainActivity.onSaveInstanceState
+D/Ciclo   : GastoEditorActivity.onPause
+D/Ciclo   : GastoEditorActivity.onStop
+D/Ciclo   : GastoEditorActivity.onSaveInstanceState
+D/Ciclo   : GastoEditorActivity.onDestroy
+D/Ciclo   : GastoEditorActivity.onCreate (estado guardado: true)
+D/Ciclo   : GastoEditorActivity.onStart
+D/Ciclo   : GastoEditorActivity.onResume
+D/Ciclo   : GastoEditorActivity.onPause
+D/Ciclo   : GastoEditorActivity.onStop
+D/Ciclo   : GastoEditorActivity.onSaveInstanceState
+D/Ciclo   : GastoEditorActivity.onDestroy
+D/Ciclo   : GastoEditorActivity.onCreate (estado guardado: true)
+D/Ciclo   : GastoEditorActivity.onStart
+D/Ciclo   : GastoEditorActivity.onResume
+D/Ciclo   : GastoEditorActivity.onPause
+D/Ciclo   : MainActivity.onRestart
+D/Ciclo   : MainActivity.onStart
+D/Ciclo   : MainActivity.onResume
+D/Ciclo   : GastoEditorActivity.onStop
+D/Ciclo   : GastoEditorActivity.onDestroy
