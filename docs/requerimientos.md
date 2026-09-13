@@ -1,10 +1,12 @@
+![UTN Facultad Regional San Francisco](logo-utn-frsf.svg)
+
 # Trabajo Práctico 1 — Desarrollo de Aplicaciones Móviles
 
 **Cátedra:** Arquitecturas Móviles — UTN Facultad Regional San Francisco
 **Profesor:** Ing. Juan Pablo Bono
 **Alumno:** Fabricio Quinteros
 **Aplicación:** Tarjetazo — gastos de una tarjeta de crédito compartida
-**Repositorio:** https://github.com/FabriQuinteros/tp1-arquitecturas-moviles
+**Repositorio:** <https://github.com/FabriQuinteros/tp1-arquitecturas-moviles>
 
 ---
 
@@ -135,7 +137,7 @@ las dos cosas.
 
 ## 9. Implementación
 
-El código fuente está en https://github.com/FabriQuinteros/tp1-arquitecturas-moviles
+El código fuente está en <https://github.com/FabriQuinteros/tp1-arquitecturas-moviles>.
 
 | Archivo | Qué contiene |
 |---------|--------------|
