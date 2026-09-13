@@ -14,6 +14,6 @@ Trabajo Práctico 1 — Arquitecturas Móviles, UTN FRSF, 2026. Prof. Ing. Juan 
 2. `Run > Run 'app'` sobre un emulador con API 26 o superior, o un dispositivo físico
    con depuración USB activada.
 
-## Integrantes
+## Alumno
 
 - Fabricio Quinteros
