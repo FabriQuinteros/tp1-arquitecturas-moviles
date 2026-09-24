@@ -8,6 +8,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -36,8 +37,22 @@ class MainActivity : ActividadRegistrada() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val sesion = FirebaseAuth.getInstance()
+        if (sesion.currentUser == null) {
+            // La sesión se cerró desde otro lado, o el proceso volvió sin ella.
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_main)
         repo = Repositorio(this)
+        findViewById<TextView>(R.id.cuenta).text = sesion.currentUser?.email
+        findViewById<Button>(R.id.salir).setOnClickListener {
+            sesion.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        }
         lista = findViewById(R.id.lista)
         total = findViewById(R.id.total)
         lista.emptyView = findViewById(R.id.vacio)
