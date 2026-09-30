@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "936722976228",
+    "project_id": "tarjetazo-arq-mov",
+    "storage_bucket": "tarjetazo-arq-mov.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:936722976228:android:82146e2df04955a1794bf1",
+        "android_client_info": {
+          "package_name": "ar.edu.utn.frsfco.tarjetazo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOuo9EzIcuH7t3R7X_yXI2aO61vbPpvf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
