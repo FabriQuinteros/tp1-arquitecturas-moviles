@@ -6,7 +6,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 /**
  * Ingreso con correo y contraseña contra Firebase Authentication.
@@ -44,8 +48,17 @@ class LoginActivity : ActividadRegistrada() {
             .addOnSuccessListener { abrirGastos() }
             .addOnFailureListener {
                 habilitar(true)
-                findViewById<TextView>(R.id.error).text = it.localizedMessage ?: "No se pudo ingresar"
+                findViewById<TextView>(R.id.error).text = mensajeDeError(it)
             }
+    }
+
+    // Firebase devuelve sus mensajes en inglés y con jerga técnica.
+    private fun mensajeDeError(e: Exception) = when (e) {
+        is FirebaseAuthUserCollisionException -> "Ya existe una cuenta con ese correo. Tocá «Entrar»."
+        is FirebaseAuthInvalidCredentialsException, is FirebaseAuthInvalidUserException ->
+            "Correo o contraseña incorrectos."
+        is FirebaseNetworkException -> "Sin conexión a internet. Probá de nuevo."
+        else -> "No se pudo ingresar. Probá de nuevo."
     }
 
     private fun abrirGastos() {

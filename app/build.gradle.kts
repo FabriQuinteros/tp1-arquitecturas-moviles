@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "ar.edu.utn.frsf.tarjetazo"
+        applicationId = "ar.edu.utn.frsfco.tarjetazo"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
