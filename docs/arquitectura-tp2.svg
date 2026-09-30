@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" font-family="Segoe UI, Arial, sans-serif" font-size="12">
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker>
+  </defs>
+
+  <!-- Dispositivo -->
+  <rect x="10" y="10" width="440" height="450" rx="10" fill="#f6f6f6" stroke="#888"/>
+  <text x="24" y="32" font-weight="bold" font-size="13">Dispositivo Android — app Tarjetazo</text>
+
+  <text x="24" y="58" fill="#555">Interfaz (Activities)</text>
+  <rect x="24" y="66" width="190" height="40" rx="6" fill="#fff" stroke="#6750a4" stroke-width="2"/>
+  <text x="119" y="84" text-anchor="middle" font-weight="bold">LoginActivity</text>
+  <text x="119" y="99" text-anchor="middle" font-size="10.5" fill="#555">nueva · punto de entrada</text>
+  <rect x="236" y="66" width="200" height="40" rx="6" fill="#fff" stroke="#333"/>
+  <text x="336" y="91" text-anchor="middle">MainActivity</text>
+  <rect x="24" y="118" width="190" height="34" rx="6" fill="#fff" stroke="#333"/>
+  <text x="119" y="140" text-anchor="middle">GastoEditorActivity</text>
+  <rect x="236" y="118" width="200" height="34" rx="6" fill="#fff" stroke="#333"/>
+  <text x="336" y="140" text-anchor="middle">DeudasActivity</text>
+
+  <text x="24" y="186" fill="#555">Lógica y datos</text>
+  <rect x="24" y="194" width="190" height="40" rx="6" fill="#fff" stroke="#333"/>
+  <text x="119" y="212" text-anchor="middle">Dominio</text>
+  <text x="119" y="227" text-anchor="middle" font-size="10.5" fill="#555">reparto de importes</text>
+  <rect x="236" y="194" width="200" height="40" rx="6" fill="#fff" stroke="#333"/>
+  <text x="336" y="212" text-anchor="middle">Repositorio</text>
+  <text x="336" y="227" text-anchor="middle" font-size="10.5" fill="#555">lectura y escritura local</text>
+
+  <rect x="236" y="262" width="200" height="40" rx="6" fill="#fff" stroke="#333"/>
+  <text x="336" y="280" text-anchor="middle">SharedPreferences</text>
+  <text x="336" y="295" text-anchor="middle" font-size="10.5" fill="#555">gastos y borrador (JSON)</text>
+
+  <rect x="24" y="262" width="190" height="40" rx="6" fill="#fff" stroke="#6750a4" stroke-width="2"/>
+  <text x="119" y="280" text-anchor="middle" font-weight="bold">SDK Firebase Auth</text>
+  <text x="119" y="295" text-anchor="middle" font-size="10.5" fill="#555">nuevo · guarda la sesión</text>
+
+  <rect x="24" y="340" width="412" height="46" rx="6" fill="#fff" stroke="#b3261e" stroke-dasharray="6 4" stroke-width="1.5"/>
+  <text x="230" y="359" text-anchor="middle" fill="#b3261e" font-weight="bold">SDK Cloud Firestore (propuesto)</text>
+  <text x="230" y="376" text-anchor="middle" font-size="10.5" fill="#555">caché local: sigue operando sin conexión y sincroniza al volver</text>
+
+  <rect x="24" y="398" width="412" height="46" rx="6" fill="#fff" stroke="#b3261e" stroke-dasharray="6 4" stroke-width="1.5"/>
+  <text x="230" y="417" text-anchor="middle" fill="#b3261e" font-weight="bold">SDK Analytics + Crashlytics (propuesto)</text>
+  <text x="230" y="434" text-anchor="middle" font-size="10.5" fill="#555">eventos de uso y errores para medir el producto</text>
+
+  <!-- flechas internas -->
+  <polyline points="24,90 16,90 16,282 24,282" fill="none" stroke="#6750a4" stroke-width="1.5" marker-end="url(#f)"/>
+  <line x1="214" y1="86" x2="236" y2="86" stroke="#333" marker-end="url(#f)"/>
+  <line x1="336" y1="152" x2="336" y2="194" stroke="#333" marker-end="url(#f)"/>
+  <line x1="236" y1="214" x2="214" y2="214" stroke="#333" marker-end="url(#f)"/>
+  <line x1="336" y1="234" x2="336" y2="262" stroke="#333" marker-end="url(#f)"/>
+  <line x1="336" y1="302" x2="336" y2="340" stroke="#b3261e" stroke-dasharray="4 3" marker-end="url(#f)"/>
+
+  <!-- Nube -->
+  <rect x="510" y="10" width="240" height="450" rx="10" fill="#fdf6e3" stroke="#c9a227"/>
+  <text x="524" y="32" font-weight="bold" font-size="13">Firebase (nube de Google)</text>
+  <rect x="524" y="250" width="212" height="56" rx="6" fill="#fff" stroke="#6750a4" stroke-width="2"/>
+  <text x="630" y="273" text-anchor="middle" font-weight="bold">Authentication</text>
+  <text x="630" y="290" text-anchor="middle" font-size="10.5" fill="#555">correo y contraseña</text>
+  <rect x="524" y="336" width="212" height="56" rx="6" fill="#fff" stroke="#b3261e" stroke-dasharray="6 4" stroke-width="1.5"/>
+  <text x="630" y="359" text-anchor="middle" fill="#b3261e" font-weight="bold">Cloud Firestore</text>
+  <text x="630" y="376" text-anchor="middle" font-size="10.5" fill="#555">gastos por tarjeta, reglas por cuenta</text>
+  <rect x="524" y="404" width="212" height="46" rx="6" fill="#fff" stroke="#b3261e" stroke-dasharray="6 4" stroke-width="1.5"/>
+  <text x="630" y="424" text-anchor="middle" fill="#b3261e" font-weight="bold">Analytics · Crashlytics</text>
+
+  <polyline points="119,302 119,321 480,321 480,278 524,278" fill="none" stroke="#6750a4" stroke-width="1.5" marker-end="url(#f)"/>
+  <text x="487" y="270" font-size="10.5" fill="#6750a4">HTTPS</text>
+  <line x1="436" y1="363" x2="524" y2="363" stroke="#b3261e" stroke-dasharray="4 3" marker-end="url(#f)"/>
+  <line x1="436" y1="421" x2="524" y2="425" stroke="#b3261e" stroke-dasharray="4 3" marker-end="url(#f)"/>
+
+  <!-- referencias -->
+  <rect x="524" y="60" width="212" height="100" rx="6" fill="#fff" stroke="#ccc"/>
+  <text x="536" y="80" font-weight="bold">Referencias</text>
+  <rect x="536" y="90" width="22" height="12" fill="#fff" stroke="#333"/><text x="566" y="100">del TP 1</text>
+  <rect x="536" y="112" width="22" height="12" fill="#fff" stroke="#6750a4" stroke-width="2"/><text x="566" y="122">agregado en el TP 2</text>
+  <rect x="536" y="134" width="22" height="12" fill="#fff" stroke="#b3261e" stroke-dasharray="4 3"/><text x="566" y="144">propuesto</text>
+</svg>
