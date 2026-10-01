@@ -6,7 +6,9 @@ DOCS = pathlib.Path(r"E:\tp1-arquitecturas-moviles\docs")
 EDGE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 
 md = io.open(DOCS / "tp2.md", encoding="utf-8").read()
-md = re.sub(r"^(\*\*[^\n]+)$", r"\1  ", md, flags=re.M)
+# Las líneas de la portada ("**Cátedra:** ...") van una debajo de la otra; solo antes del primer "---".
+portada, resto = md.split("\n---\n", 1)
+md = re.sub(r"^(\*\*[^\n]+)$", r"\1  ", portada, flags=re.M) + "\n---\n" + resto
 cuerpo = markdown.markdown(md, extensions=["tables"])
 
 CSS = """
