@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
+import com.google.firebase.analytics.FirebaseAnalytics
 
 class DeudasActivity : ActividadRegistrada() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,6 +16,7 @@ class DeudasActivity : ActividadRegistrada() {
         // Intent implícito: se declara la acción y el sistema ofrece las apps que la atienden (RF-7).
         findViewById<Button>(R.id.compartir).setOnClickListener {
             val enviar = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, texto)
+            FirebaseAnalytics.getInstance(this).logEvent(FirebaseAnalytics.Event.SHARE, null)
             startActivity(Intent.createChooser(enviar, "Compartir resumen"))
         }
     }

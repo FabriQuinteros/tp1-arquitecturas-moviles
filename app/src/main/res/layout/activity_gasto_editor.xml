@@ -34,6 +34,12 @@
             android:importantForAutofill="no"
             android:inputType="numberDecimal" />
 
+        <CheckBox
+            android:id="@+id/en_dolares"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Importe en dólares (se pasa a pesos al dólar tarjeta del día)" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

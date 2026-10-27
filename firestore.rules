@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cada cuenta lee y escribe solo sus propios gastos.
+    match /usuarios/{uid}/gastos/{gasto} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

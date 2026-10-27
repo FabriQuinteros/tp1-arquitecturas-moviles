@@ -1,0 +1,56 @@
+direction: right
+classes: {
+  nuevo: {style: {fill: "#e3f0e3"; stroke: "#2e7d32"; stroke-width: 2}}
+  previo: {style: {fill: "#ffffff"; stroke: "#888"}}
+}
+
+app: "Dispositivo Android — app Tarjetazo" {
+  style: {fill: "#f6f6f6"; stroke: "#888"; border-radius: 10}
+  direction: down
+
+  ui: "Interfaz (Activities)" {
+    style: {fill: "#fafafa"}
+    login: LoginActivity {class: previo}
+    main: "MainActivity\nsincroniza al abrir" {class: nuevo}
+    editor: "GastoEditorActivity\ncasilla «en dólares»" {class: nuevo}
+    deudas: DeudasActivity {class: previo}
+  }
+
+  datos: "Lógica y datos" {
+    style: {fill: "#fafafa"}
+    dominio: "Dominio\nreparto de importes" {class: previo}
+    repo: "Repositorio\ncopia local + nube" {class: nuevo}
+    prefs: "SharedPreferences\ncopia local por cuenta" {class: previo}
+    cotiz: "Cotizacion\nHTTP + JSON (stdlib)" {class: nuevo}
+  }
+
+  sdks: "SDKs (dependencias Gradle, Firebase BoM)" {
+    style: {fill: "#fafafa"}
+    auth: "Firebase Auth SDK" {class: previo}
+    fs: "Cloud Firestore SDK\ncaché offline + cola de escrituras" {class: nuevo}
+    an: "Firebase Analytics SDK\neventos de uso" {class: nuevo}
+  }
+
+  ui.main -> datos.repo
+  ui.editor -> datos.cotiz: "solo si es en dólares"
+  datos.repo -> datos.prefs
+  datos.repo -> sdks.fs
+  ui.main -> sdks.an: "gasto_cargado"
+  ui.deudas -> sdks.an: "share"
+  ui.login -> sdks.auth
+}
+
+firebase: "Firebase (nube de Google)" {
+  style: {fill: "#fff8e1"; stroke: "#f9a825"; border-radius: 10}
+  direction: down
+  authsrv: "Authentication" {class: previo}
+  fsdb: "Cloud Firestore\nusuarios/{uid}/gastos/{id}\nreglas: solo el dueño" {class: nuevo}
+  ga: "Google Analytics\npanel de eventos" {class: nuevo}
+}
+
+dolarapi: "DolarApi (API REST pública)\nGET /v1/dolares/tarjeta" {class: nuevo; shape: cylinder}
+
+app.sdks.auth -> firebase.authsrv: HTTPS
+app.sdks.fs -> firebase.fsdb: "HTTPS / gRPC"
+app.sdks.an -> firebase.ga: "HTTPS, en lotes"
+app.datos.cotiz -> dolarapi: "HTTPS · JSON"

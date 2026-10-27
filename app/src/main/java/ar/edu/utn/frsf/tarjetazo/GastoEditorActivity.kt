@@ -3,8 +3,10 @@ package ar.edu.utn.frsf.tarjetazo
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
+import java.math.BigDecimal
 
 /**
  * Alta de un gasto. Cómo responde al ciclo de vida:
@@ -47,14 +49,29 @@ class GastoEditorActivity : ActividadRegistrada() {
         val division = texto(DIVISION)
         runCatching { parseDivision(division) }.onFailure { return avisar(it.message.orEmpty()) }
 
-        terminar(
-            RESULT_OK,
-            Intent()
-                .putExtra(COMERCIO, comercio)
-                .putExtra(IMPORTE, importe.toPlainString())
-                .putExtra(DIVISION, division),
-        )
+        if (!findViewById<CheckBox>(R.id.en_dolares).isChecked) return devolver(comercio, importe, division, false)
+
+        // La consulta a la API es de red: va en otro hilo y vuelve al principal para tocar la interfaz.
+        val boton = findViewById<Button>(R.id.guardar).apply { isEnabled = false }
+        Thread {
+            val cotizacion = runCatching { Cotizacion.dolarTarjeta() }
+            runOnUiThread {
+                boton.isEnabled = true
+                cotizacion
+                    .onSuccess { dolar -> devolver("$comercio (US$ ${importe.toPlainString()} a $dolar)", Cotizacion.aPesos(importe, dolar), division, true) }
+                    .onFailure { avisar("No se pudo obtener la cotización del dólar. Revisá la conexión.") }
+            }
+        }.start()
     }
+
+    private fun devolver(comercio: String, importe: BigDecimal, division: String, enDolares: Boolean) = terminar(
+        RESULT_OK,
+        Intent()
+            .putExtra(COMERCIO, comercio)
+            .putExtra(IMPORTE, importe.toPlainString())
+            .putExtra(DIVISION, division)
+            .putExtra(EN_DOLARES, enDolares),
+    )
 
     private fun terminar(resultado: Int, datos: Intent?) {
         terminado = true
@@ -71,5 +88,6 @@ class GastoEditorActivity : ActividadRegistrada() {
         const val COMERCIO = "comercio"
         const val IMPORTE = "importe"
         const val DIVISION = "division"
+        const val EN_DOLARES = "en_dolares"
     }
 }

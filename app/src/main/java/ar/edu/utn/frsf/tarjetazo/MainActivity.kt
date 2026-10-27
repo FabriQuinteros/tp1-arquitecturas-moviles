@@ -8,6 +8,8 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -23,13 +25,20 @@ class MainActivity : ActividadRegistrada() {
     private val nuevoGasto = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { r ->
         val datos = r.data
         if (r.resultCode != RESULT_OK || datos == null) return@registerForActivityResult
-        repo.agregar(
-            Gasto(
-                id = System.currentTimeMillis(),
-                fecha = LocalDate.now().toString(),
-                comercio = datos.getStringExtra(GastoEditorActivity.COMERCIO).orEmpty(),
-                importe = BigDecimal(datos.getStringExtra(GastoEditorActivity.IMPORTE)),
-                division = parseDivision(datos.getStringExtra(GastoEditorActivity.DIVISION).orEmpty()),
+        val gasto = Gasto(
+            id = System.currentTimeMillis(),
+            fecha = LocalDate.now().toString(),
+            comercio = datos.getStringExtra(GastoEditorActivity.COMERCIO).orEmpty(),
+            importe = BigDecimal(datos.getStringExtra(GastoEditorActivity.IMPORTE)),
+            division = parseDivision(datos.getStringExtra(GastoEditorActivity.DIVISION).orEmpty()),
+        )
+        repo.agregar(gasto)
+        // Lo que mide la hipótesis del MVP: cuántos gastos se cargan y entre cuántas personas se dividen.
+        FirebaseAnalytics.getInstance(this).logEvent(
+            "gasto_cargado",
+            bundleOf(
+                "personas" to gasto.division.size.coerceAtLeast(1).toLong(),
+                "en_dolares" to datos.getBooleanExtra(GastoEditorActivity.EN_DOLARES, false).toString(),
             ),
         )
         mostrar()
@@ -68,6 +77,7 @@ class MainActivity : ActividadRegistrada() {
             true
         }
         mostrar()
+        repo.sincronizar { if (!isDestroyed) mostrar() }
     }
 
     private fun mostrar() {
