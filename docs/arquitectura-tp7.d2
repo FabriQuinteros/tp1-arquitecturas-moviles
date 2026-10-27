@@ -1,56 +1,45 @@
-direction: right
+# Diagrama de contenedores (modelo C4): cada flecha dice protocolo y patrón de comunicación.
+direction: down
+vars: {d2-config: {layout-engine: elk}}
 classes: {
-  nuevo: {style: {fill: "#e3f0e3"; stroke: "#2e7d32"; stroke-width: 2}}
-  previo: {style: {fill: "#ffffff"; stroke: "#888"}}
+  propio: {style: {fill: "#1168bd"; stroke: "#0b4884"; font-color: "#ffffff"; border-radius: 6}}
+  nuevo: {style: {fill: "#2e7d32"; stroke: "#1b5e20"; font-color: "#ffffff"; border-radius: 6}}
+  externo: {style: {fill: "#8a8a8a"; stroke: "#6b6b6b"; font-color: "#ffffff"; border-radius: 6}}
+  nube: {style: {fill: "#fffaf0"; stroke: "#c98a00"; stroke-dash: 4; border-radius: 10; font-color: "#7a5300"}}
 }
 
-app: "Dispositivo Android — app Tarjetazo" {
-  style: {fill: "#f6f6f6"; stroke: "#888"; border-radius: 10}
-  direction: down
+titular: "Titular de la tarjeta\n[Persona]" {style: {fill: "#08427b"; font-color: "#ffffff"; border-radius: 20}}
 
-  ui: "Interfaz (Activities)" {
-    style: {fill: "#fafafa"}
-    login: LoginActivity {class: previo}
-    main: "MainActivity\nsincroniza al abrir" {class: nuevo}
-    editor: "GastoEditorActivity\ncasilla «en dólares»" {class: nuevo}
-    deudas: DeudasActivity {class: previo}
-  }
+app: "App Tarjetazo\n[Contenedor: Android · Kotlin]" {
+  style: {fill: "#f4f8fc"; stroke: "#1168bd"; stroke-dash: 4; border-radius: 10}
+  ui: "Activities\n[pantallas]" {class: propio}
+  repo: "Repositorio\n[copia local + nube]" {class: nuevo}
+  cotiz: "Cotizacion\n[cliente HTTP, stdlib]" {class: nuevo}
+  avisos: "Avisos\n[FirebaseMessagingService]" {class: nuevo}
+  prefs: "SharedPreferences\n[copia local por cuenta]" {shape: cylinder; class: propio}
+  sdk: "SDKs de Firebase\n[Auth · Firestore · Messaging, BoM]" {class: propio}
 
-  datos: "Lógica y datos" {
-    style: {fill: "#fafafa"}
-    dominio: "Dominio\nreparto de importes" {class: previo}
-    repo: "Repositorio\ncopia local + nube" {class: nuevo}
-    prefs: "SharedPreferences\ncopia local por cuenta" {class: previo}
-    cotiz: "Cotizacion\nHTTP + JSON (stdlib)" {class: nuevo}
-  }
-
-  sdks: "SDKs (dependencias Gradle, Firebase BoM)" {
-    style: {fill: "#fafafa"}
-    auth: "Firebase Auth SDK" {class: previo}
-    fs: "Cloud Firestore SDK\ncaché offline + cola de escrituras" {class: nuevo}
-    an: "Firebase Analytics SDK\neventos de uso" {class: nuevo}
-  }
-
-  ui.main -> datos.repo
-  ui.editor -> datos.cotiz: "solo si es en dólares"
-  datos.repo -> datos.prefs
-  datos.repo -> sdks.fs
-  ui.main -> sdks.an: "gasto_cargado"
-  ui.deudas -> sdks.an: "share"
-  ui.login -> sdks.auth
+  ui -> repo: "guarda / lee"
+  ui -> cotiz: "solo gastos en dólares"
+  repo -> prefs
+  repo -> sdk
+  avisos -> ui: "notificación" {style.stroke-dash: 3}
 }
 
-firebase: "Firebase (nube de Google)" {
-  style: {fill: "#fff8e1"; stroke: "#f9a825"; border-radius: 10}
-  direction: down
-  authsrv: "Authentication" {class: previo}
-  fsdb: "Cloud Firestore\nusuarios/{uid}/gastos/{id}\nreglas: solo el dueño" {class: nuevo}
-  ga: "Google Analytics\npanel de eventos" {class: nuevo}
+firebase: "Firebase · nube de Google" {
+  class: nube
+  auth: "Authentication\n[ingreso por correo]" {class: externo}
+  fs: "Cloud Firestore\n[usuarios/{uid}/gastos]" {shape: cylinder; class: nuevo}
+  fcm: "Cloud Messaging\n[tema recordatorio-cierre]" {shape: queue; class: nuevo}
 }
 
-dolarapi: "DolarApi (API REST pública)\nGET /v1/dolares/tarjeta" {class: nuevo; shape: cylinder}
+dolar: "DolarApi\n[API REST pública]" {class: externo}
+consola: "Consola de Firebase\n[quien publica el aviso]" {class: externo}
 
-app.sdks.auth -> firebase.authsrv: HTTPS
-app.sdks.fs -> firebase.fsdb: "HTTPS / gRPC"
-app.sdks.an -> firebase.ga: "HTTPS, en lotes"
-app.datos.cotiz -> dolarapi: "HTTPS · JSON"
+titular -> app.ui: "usa"
+app.sdk -> firebase.auth: "HTTPS · REST/JSON\npedido-respuesta"
+app.sdk -> firebase.fs: "gRPC sobre HTTP/2 · Protobuf\nstream bidireccional, cola offline"
+app.cotiz -> dolar: "HTTPS · REST/JSON\nGET pedido-respuesta"
+consola -> firebase.fcm: "HTTPS · FCM HTTP v1\npublica en el tema"
+firebase.fcm -> app.avisos: "push · conexión persistente\nde Google Play (TCP 5228)\npublicador/suscriptor" {style: {stroke: "#2e7d32"; stroke-width: 2}}
+app.sdk -> firebase.fcm: "suscripción al tema" {style.stroke-dash: 3}

@@ -28,7 +28,7 @@ pre { background: #f2f2f2; padding: 6px 8px; font-size: 8.5pt; white-space: pre-
 code { font-family: Consolas, monospace; font-size: 9pt; background: #f2f2f2; padding: 0 3px; }
 img { width: 30%; margin: 0 1% 1em 0; border: 1px solid #ccc; vertical-align: top; }
 img[src$="logo-utn-frsf.svg"] { width: 5cm; border: 0; }
-img[src$="arquitectura-tp7.svg"] { width: 100%; border: 0; page-break-inside: avoid; }
+img[src$="arquitectura-tp7.svg"] { width: 72%; display: block; margin: 0 auto; border: 0; page-break-inside: avoid; }
 """
 html = f'<!doctype html><html lang="es"><head><meta charset="utf-8"><style>{CSS}</style></head><body>{cuerpo}</body></html>'
 tmp = DOCS / "_tp7.html"

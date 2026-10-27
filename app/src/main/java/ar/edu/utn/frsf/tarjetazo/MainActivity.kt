@@ -8,8 +8,9 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
-import com.google.firebase.analytics.FirebaseAnalytics
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -33,16 +34,12 @@ class MainActivity : ActividadRegistrada() {
             division = parseDivision(datos.getStringExtra(GastoEditorActivity.DIVISION).orEmpty()),
         )
         repo.agregar(gasto)
-        // Lo que mide la hipótesis del MVP: cuántos gastos se cargan y entre cuántas personas se dividen.
-        FirebaseAnalytics.getInstance(this).logEvent(
-            "gasto_cargado",
-            bundleOf(
-                "personas" to gasto.division.size.coerceAtLeast(1).toLong(),
-                "en_dolares" to datos.getBooleanExtra(GastoEditorActivity.EN_DOLARES, false).toString(),
-            ),
-        )
         mostrar()
     }
+
+    // Desde Android 13 mostrar notificaciones requiere permiso explícito; sin él, la suscripción
+    // al tema sigue, pero los avisos no se ven.
+    private val permisoAvisos = registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +75,11 @@ class MainActivity : ActividadRegistrada() {
         }
         mostrar()
         repo.sincronizar { if (!isDestroyed) mostrar() }
+
+        Avisos.suscribir()
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            permisoAvisos.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     private fun mostrar() {
