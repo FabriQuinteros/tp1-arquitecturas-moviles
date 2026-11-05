@@ -1,0 +1,45 @@
+# Diagrama de contenedores (modelo C4) con la estrategia de escalabilidad.
+direction: down
+vars: {d2-config: {layout-engine: elk}}
+classes: {
+  propio: {style: {fill: "#1168bd"; stroke: "#0b4884"; font-color: "#ffffff"; border-radius: 6}}
+  nuevo: {style: {fill: "#2e7d32"; stroke: "#1b5e20"; font-color: "#ffffff"; border-radius: 6}}
+  externo: {style: {fill: "#8a8a8a"; stroke: "#6b6b6b"; font-color: "#ffffff"; border-radius: 6}}
+  zona: {style: {fill: "#fffaf0"; stroke: "#c98a00"; stroke-dash: 4; border-radius: 10; font-color: "#7a5300"}}
+}
+
+app: "App Tarjetazo\n[Android · Kotlin]\ncopia local + sincronización por cambios" {class: propio}
+importador: "Banco / importador de resúmenes\n[sistema externo]" {class: externo}
+
+gcp: "Google Cloud · southamerica-east1 (varias zonas)" {
+  class: zona
+
+  api: "API · Cloud Run\n[0 a 10 instancias, 80 pedidos c/u]\nresponde 202" {class: nuevo}
+  cola: "Pub/Sub · tema consumos\n[cola durable]" {shape: queue; class: nuevo}
+  errores: "Pub/Sub · consumos-errores\n[a los 5 intentos]" {shape: queue; class: externo}
+  worker: "Worker · Cloud Run\n[0 a 5 instancias, 20 c/u]\nescritura idempotente" {class: nuevo}
+  scheduler: "Cloud Scheduler\n[cada 30 min · días 20 a 24]" {class: nuevo}
+  jobs: "Tareas · Cloud Run Jobs\n[cotizacion · recordatorio]" {class: nuevo}
+}
+
+firebase: "Firebase (administrado, escala solo)" {
+  class: zona
+  auth: "Authentication" {class: propio}
+  fs: "Cloud Firestore\n[usuarios/{uid}/gastos · cotizaciones/tarjeta]" {shape: cylinder; class: propio}
+  fcm: "Cloud Messaging\n[tema recordatorio-cierre]" {shape: queue; class: propio}
+}
+
+dolar: "DolarApi\n[API REST pública]" {class: externo}
+
+importador -> gcp.api: "HTTPS · POST /consumos\nIAM (cuenta de servicio)"
+gcp.api -> gcp.cola: "publica y espera confirmación\n(milisegundos)"
+gcp.cola -> gcp.worker: "push HTTPS + OIDC\nreintentos con espera creciente" {style: {stroke: "#2e7d32"; stroke-width: 2}}
+gcp.cola -> gcp.errores: "mensajes que fallan" {style.stroke-dash: 3}
+gcp.worker -> firebase.fs: "gRPC · set(id)"
+gcp.scheduler -> gcp.jobs: "HTTPS · jobs:run"
+gcp.jobs -> dolar: "1 GET cada 30 min\n(no 1 por usuario)"
+gcp.jobs -> firebase.fs: "guarda la cotización"
+gcp.jobs -> firebase.fcm: "publica en el tema"
+app -> firebase.fs: "gRPC · solo lo cambiado\ndesde la última vez"
+app -> firebase.auth: "HTTPS · REST"
+firebase.fcm -> app: "push · publicador/suscriptor" {style: {stroke: "#2e7d32"; stroke-width: 2}}
