@@ -2,11 +2,15 @@ package ar.edu.utn.frsf.tarjetazo
 
 import android.content.Context
 import androidx.core.content.edit
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import org.json.JSONArray
 import org.json.JSONObject
 import java.math.BigDecimal
+import java.util.Date
 
 /**
  * Dos niveles: SharedPreferences es la copia local que lee la interfaz, y Cloud Firestore
@@ -40,22 +44,32 @@ class Repositorio(context: Context) {
         remotos.document(gasto.id.toString()).set(aDocumento(gasto))
     }
 
+    /** Se marca como borrado en lugar de eliminarlo: si no, los otros teléfonos nunca se enterarían. */
     fun eliminar(id: Long) {
         guardar(gastos().filterNot { it.id == id })
-        remotos.document(id.toString()).delete()
+        remotos.document(id.toString()).set(mapOf("borrado" to true, "actualizado" to FieldValue.serverTimestamp()), SetOptions.merge())
     }
 
     /**
-     * Trae los gastos de la cuenta y reemplaza la copia local: así aparecen en un teléfono nuevo.
-     * Si la nube está vacía y el teléfono no, es la primera vez de esta cuenta: se suben los locales.
+     * Trae solo lo que cambió desde la última vez y lo mezcla con la copia local. Firestore cobra por
+     * documento leído: descargar todo en cada apertura hace que el costo crezca con usuarios × gastos × aperturas.
+     * La marca es la hora del servidor del último cambio recibido, no la del teléfono, que puede estar mal.
+     * Si es la primera vez y la nube está vacía, se suben los gastos que ya estaban en el teléfono.
      */
     fun sincronizar(listo: () -> Unit) {
-        remotos.get().addOnSuccessListener { resultado ->
-            if (resultado.isEmpty) {
+        val desde = prefs.getLong("sincronizado", 0)
+        remotos.whereGreaterThan("actualizado", Timestamp(Date(desde))).get().addOnSuccessListener { resultado ->
+            if (resultado.isEmpty && desde == 0L) {
                 gastos().forEach { remotos.document(it.id.toString()).set(aDocumento(it)) }
-            } else {
-                guardar(resultado.documents.mapNotNull { desdeDocumento(it.id, it.data) }.sortedByDescending { it.id })
             }
+            val locales = gastos().associateBy { it.id }.toMutableMap()
+            resultado.documents.forEach { doc ->
+                if (doc.getBoolean("borrado") == true) locales.remove(doc.id.toLongOrNull())
+                else desdeDocumento(doc.id, doc.data)?.let { locales[it.id] = it }
+            }
+            guardar(locales.values.sortedByDescending { it.id })
+            resultado.documents.mapNotNull { it.getTimestamp("actualizado")?.toDate()?.time }.maxOrNull()
+                ?.let { ultimo -> prefs.edit { putLong("sincronizado", ultimo) } }
             listo()
         }
     }
@@ -85,6 +99,8 @@ class Repositorio(context: Context) {
         "comercio" to g.comercio,
         "importe" to g.importe.toPlainString(),
         "division" to g.division.map { mapOf("nombre" to it.first, "porcentaje" to it.second) },
+        "borrado" to false,
+        "actualizado" to FieldValue.serverTimestamp(),
     )
 
     private fun desdeDocumento(id: String, d: Map<String, Any>?): Gasto? = runCatching {

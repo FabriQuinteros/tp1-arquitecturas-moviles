@@ -51,17 +51,14 @@ class GastoEditorActivity : ActividadRegistrada() {
 
         if (!findViewById<CheckBox>(R.id.en_dolares).isChecked) return devolver(comercio, importe, division, false)
 
-        // La consulta a la API es de red: va en otro hilo y vuelve al principal para tocar la interfaz.
+        // Firestore responde de forma asincrónica y llama de vuelta en el hilo principal.
         val boton = findViewById<Button>(R.id.guardar).apply { isEnabled = false }
-        Thread {
-            val cotizacion = runCatching { Cotizacion.dolarTarjeta() }
-            runOnUiThread {
-                boton.isEnabled = true
-                cotizacion
-                    .onSuccess { dolar -> devolver("$comercio (US$ ${importe.toPlainString()} a $dolar)", Cotizacion.aPesos(importe, dolar), division, true) }
-                    .onFailure { avisar("No se pudo obtener la cotización del dólar. Revisá la conexión.") }
-            }
-        }.start()
+        Cotizacion.dolarTarjeta { cotizacion ->
+            boton.isEnabled = true
+            cotizacion
+                .onSuccess { dolar -> devolver("$comercio (US$ ${importe.toPlainString()} a $dolar)", Cotizacion.aPesos(importe, dolar), division, true) }
+                .onFailure { avisar("Todavía no hay cotización del dólar. Probá con conexión.") }
+        }
     }
 
     private fun devolver(comercio: String, importe: BigDecimal, division: String, enDolares: Boolean) = terminar(

@@ -1,31 +1,20 @@
 package ar.edu.utn.frsf.tarjetazo
 
-import org.json.JSONObject
+import com.google.firebase.firestore.FirebaseFirestore
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.net.HttpURLConnection
-import java.net.URL
 
 /**
- * API REST de DolarApi (https://dolarapi.com): sin clave ni SDK, se consume con HTTP y JSON
- * de la biblioteca estándar. El "dólar tarjeta" ya incluye los impuestos que el banco suma
- * a los consumos en dólares, así que es el valor que va a aparecer en el resumen.
- * Bloquea: llamar fuera del hilo principal.
+ * El "dólar tarjeta" (ya incluye los impuestos que el banco suma a los consumos en dólares).
+ * La app no llama a DolarApi: una tarea programada del backend lo consulta cada 30 minutos y lo deja
+ * en `cotizaciones/tarjeta`. Así una sola llamada sirve a todos los usuarios, y sin conexión
+ * Firestore responde con el último valor guardado en el teléfono.
  */
 object Cotizacion {
-    private const val URL_TARJETA = "https://dolarapi.com/v1/dolares/tarjeta"
-
-    fun dolarTarjeta(): BigDecimal {
-        val conexion = URL(URL_TARJETA).openConnection() as HttpURLConnection
-        conexion.connectTimeout = 5_000
-        conexion.readTimeout = 5_000
-        try {
-            if (conexion.responseCode != 200) error("La cotización respondió ${conexion.responseCode}")
-            val json = JSONObject(conexion.inputStream.bufferedReader().use { it.readText() })
-            return BigDecimal(json.getString("venta"))
-        } finally {
-            conexion.disconnect()
-        }
+    fun dolarTarjeta(listo: (Result<BigDecimal>) -> Unit) {
+        FirebaseFirestore.getInstance().document("cotizaciones/tarjeta").get()
+            .addOnSuccessListener { doc -> listo(runCatching { BigDecimal(doc.getString("venta")!!) }) }
+            .addOnFailureListener { listo(Result.failure(it)) }
     }
 
     fun aPesos(dolares: BigDecimal, cotizacion: BigDecimal): BigDecimal =
