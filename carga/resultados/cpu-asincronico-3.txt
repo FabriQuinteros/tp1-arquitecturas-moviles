@@ -1,0 +1,9 @@
+backend-balanceador-1 0.00%
+backend-worker-1 0.27%
+backend-api-3 0.40%
+backend-api-2 0.29%
+backend-api-1 0.24%
+backend-worker-3 0.34%
+backend-worker-2 0.32%
+backend-firestore-1 0.17%
+backend-pubsub-1 1.73%

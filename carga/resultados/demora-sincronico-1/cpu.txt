@@ -1,0 +1,16 @@
+musing_poitras 17.38%
+medidor 0.55%
+backend-worker-1 0.23%
+backend-api-1 30.52%
+backend-balanceador-1 4.06%
+backend-pubsub-1 1.32%
+backend-firestore-1 43.08%
+vocaia-postgres 10.26%
+residuos-simulador-1 0.26%
+residuos-api-1 1.03%
+residuos-mqtt-1 0.18%
+residuos-prometheus-1 0.00%
+residuos-grafana-1 0.08%
+residuos-db-1 14.33%
+vocaia-postgres-piloto 0.00%
+vocaia-ollama 0.00%

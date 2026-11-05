@@ -1,0 +1,16 @@
+cranky_shannon 54.81%
+medidor 0.55%
+backend-balanceador-1 23.46%
+backend-worker-1 68.15%
+backend-api-1 53.59%
+backend-firestore-1 65.54%
+backend-pubsub-1 32.32%
+vocaia-postgres 29.23%
+residuos-simulador-1 0.70%
+residuos-api-1 1.60%
+residuos-mqtt-1 0.24%
+residuos-prometheus-1 0.00%
+residuos-grafana-1 0.11%
+residuos-db-1 0.68%
+vocaia-postgres-piloto 0.00%
+vocaia-ollama 0.00%

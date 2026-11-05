@@ -1,0 +1,16 @@
+sweet_lehmann 71.27%
+medidor 0.57%
+backend-api-1 100.02%
+backend-worker-1 11.59%
+backend-balanceador-1 20.77%
+backend-firestore-1 12.29%
+backend-pubsub-1 20.40%
+vocaia-postgres 0.00%
+residuos-simulador-1 1.29%
+residuos-api-1 2.17%
+residuos-mqtt-1 0.23%
+residuos-prometheus-1 0.00%
+residuos-grafana-1 0.47%
+residuos-db-1 0.73%
+vocaia-postgres-piloto 0.00%
+vocaia-ollama 0.00%
