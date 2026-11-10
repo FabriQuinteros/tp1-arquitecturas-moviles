@@ -1,0 +1,51 @@
+# Diagrama de contenedores (modelo C4) con los mecanismos de retención.
+direction: down
+vars: {d2-config: {layout-engine: elk}}
+classes: {
+  propio: {style: {fill: "#1168bd"; stroke: "#0b4884"; font-color: "#ffffff"; border-radius: 6}}
+  nuevo: {style: {fill: "#2e7d32"; stroke: "#1b5e20"; font-color: "#ffffff"; border-radius: 6}}
+  externo: {style: {fill: "#8a8a8a"; stroke: "#6b6b6b"; font-color: "#ffffff"; border-radius: 6}}
+  zona: {style: {fill: "#fffaf0"; stroke: "#c98a00"; stroke-dash: 4; border-radius: 10; font-color: "#7a5300"}}
+}
+
+titular: "Titular de la tarjeta\n[Persona]" {style: {fill: "#08427b"; font-color: "#ffffff"; border-radius: 20}}
+equipo: "Equipo de Tarjetazo\n[Persona · lanza campañas]" {style: {fill: "#08427b"; font-color: "#ffffff"; border-radius: 20}}
+
+app: "App Tarjetazo [Android · Kotlin]" {
+  style: {fill: "#f4f8fc"; stroke: "#1168bd"; stroke-dash: 4; border-radius: 10}
+  ui: "Lista de gastos\n[racha · resumen del mes\npermiso pedido en contexto]" {class: nuevo}
+  prefs: "AvisosActivity\n[qué avisos, día de cierre]" {class: nuevo}
+  avisos: "Avisos\n[FirebaseMessagingService]\n4 canales · abre la pantalla del aviso" {class: nuevo}
+  sdk: "SDKs de Firebase\n[Auth · Firestore · Messaging]" {class: propio}
+
+  avisos -> ui: "toque → destino\n(deudas o nuevo gasto)"
+  ui -> sdk: "última apertura"
+  prefs -> sdk: "preferencias"
+  avisos -> sdk: "registra el token"
+}
+
+firebase: "Firebase" {
+  class: zona
+  fs: "Cloud Firestore\n[usuarios/{uid}: avisos · ultimaApertura · estadoAvisos\n/dispositivos/{token} · /gastos]" {shape: cylinder; class: propio}
+  fcm: "Cloud Messaging\n[por token · tema novedades]" {shape: queue; class: propio}
+  consola: "Consola de Firebase\n[campañas al tema novedades]" {class: externo}
+}
+
+gcp: "Google Cloud · southamerica-east1" {
+  class: zona
+  scheduler: "Cloud Scheduler\n[todos los días, 10 h]" {class: propio}
+  diaria: "Job avisos · Cloud Run\n[elige ≤ 1 aviso por usuario:\ncierre › resumen › inactividad]" {class: nuevo}
+  campania: "Job campania · Cloud Run\n[segmento: inactivos 14 días]" {class: nuevo}
+}
+
+titular -> app.ui: "usa"
+equipo -> firebase.consola: "redacta y programa"
+equipo -> gcp.campania: "lanza la reactivación"
+app.sdk -> firebase.fs: "gRPC"
+gcp.scheduler -> gcp.diaria: "HTTPS · jobs:run"
+gcp.diaria -> firebase.fs: "lee preferencias y gastos\nguarda el estado"
+gcp.campania -> firebase.fs: "busca inactivos"
+gcp.diaria -> firebase.fcm: "HTTPS · FCM v1\nsend_each por token" {style: {stroke: "#2e7d32"; stroke-width: 2}}
+gcp.campania -> firebase.fcm: "por token"
+firebase.consola -> firebase.fcm: "publica en el tema"
+firebase.fcm -> app.avisos: "push · conexión de Google Play" {style: {stroke: "#2e7d32"; stroke-width: 2}}
