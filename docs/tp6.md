@@ -137,6 +137,17 @@ para lo que llega a todos.
    `destino = nuevo_gasto`, para que al tocarla se abra la carga de un gasto.
 6. **Revisar → Publicar.** La consola muestra cuántos mensajes se enviaron.
 
+**Envío realizado.** Se armó la campaña «Novedades de Tarjetazo» en la consola y se mandó como
+mensaje de prueba al token del emulador. El aviso llegó al teléfono con la app en segundo plano y lo
+mostró el sistema, con el ícono y el nombre de la app:
+
+![Mensaje de prueba en la consola de Firebase](capturas-tp6/5-consola-mensaje-de-prueba.png)
+![El aviso recibido en el teléfono](capturas-tp6/6-aviso-recibido.png)
+
+La prueba mostró un detalle: un mensaje de la consola que no indica canal caía en un canal genérico
+de Android. Se declaró `novedades` como canal por defecto en el manifiesto, así esos mensajes
+quedan en el canal que el usuario puede silenciar desde los ajustes.
+
 ## 5. Pruebas
 
 | Prueba | Resultado |
@@ -144,6 +155,7 @@ para lo que llega a todos.
 | Compilación (`assembleDebug`) | Compila. |
 | Pruebas unitarias de la app | 19 pasan. `RetencionTest` (6): racha con huecos, racha viva hasta el domingo, varios gastos en la misma semana, resumen del mes con quién debe más, mes sin gastos y días hasta el cierre (incluido un cierre día 31 en un mes de 30). |
 | Pruebas del backend (`pytest`) | 20 pasan. `test_retencion.py` (13): las mismas reglas que la app, prioridad entre avisos, recordatorio a la semana justa, tope de tres sin respuesta, reinicio del contador al volver, preferencias apagadas y segmento de reactivación. |
+| Envío real con Cloud Messaging | La campaña de la consola llegó al emulador (sección 4). |
 | Emulador (Android 17) | Al cargar el primer gasto aparece la tarjeta con la racha y el resumen, y el pedido de permiso con su explicación. Las preferencias se guardan. Abrir la app con `destino=deudas` lleva a Deudas, y con `destino=nuevo_gasto`, a la carga de un gasto. |
 
 ![Lista con la racha y el resumen del mes](capturas-tp6/1-lista-con-progreso.png)
@@ -151,9 +163,10 @@ para lo que llega a todos.
 ![Preferencias de avisos](capturas-tp6/3-preferencias.png)
 ![Un aviso de cierre abre Deudas](capturas-tp6/4-aviso-abre-deudas.png)
 
-**Qué no se pudo probar.** La tarea diaria contra Firebase real necesita la cuenta de servicio del
-proyecto y el backend desplegado, que sigue sin desplegarse desde el TP 3. En local, sin
-credenciales, `tareas.py` imprime los avisos en lugar de mandarlos. Las reglas de Firestore y
+**Qué no se pudo probar.** El envío por Cloud Messaging se probó desde la consola, pero la tarea
+diaria que manda los avisos personalizados necesita la cuenta de servicio del proyecto y el backend
+desplegado, que sigue sin desplegarse desde el TP 3. En local, sin credenciales, `tareas.py`
+imprime los avisos en lugar de mandarlos. Las reglas de Firestore y
 `infra/main.tf` tampoco se validaron con sus emuladores ni con `tofu validate`.
 
 ## 6. Arquitectura actualizada

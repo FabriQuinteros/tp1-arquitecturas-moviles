@@ -52,7 +52,10 @@ class Avisos : FirebaseMessagingService() {
         /** Al abrir la app con sesión: registra este teléfono y lo pasa del tema viejo al de campañas. */
         fun iniciar(context: Context, novedades: Boolean = true) {
             crearCanales(context)
-            FirebaseMessaging.getInstance().token.addOnSuccessListener(::registrar)
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener(::registrar)
+                // Sin token no llegan avisos individuales; queda en el log para poder diagnosticarlo.
+                .addOnFailureListener { android.util.Log.w("Avisos", "no se pudo obtener el token de FCM", it) }
             FirebaseMessaging.getInstance().unsubscribeFromTopic(TEMA_VIEJO)
             suscribirNovedades(novedades)
         }
