@@ -22,6 +22,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // IDs de prueba que publica Google: muestran anuncios de muestra y no generan ingresos.
+        // Al publicar se reemplazan por los de la cuenta de AdMob. Usar los reales durante el
+        // desarrollo cuenta como clics inválidos y puede suspender la cuenta.
+        manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        buildConfigField("String", "ADMOB_BANNER", "\"ca-app-pub-3940256099942544/9214589741\"")
     }
 
     buildTypes {
@@ -30,6 +36,9 @@ android {
                 enable = false
             }
         }
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -47,6 +56,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
+    implementation(libs.billing)
+    implementation(libs.play.services.ads)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

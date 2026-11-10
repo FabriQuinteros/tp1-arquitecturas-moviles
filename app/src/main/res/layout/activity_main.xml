@@ -20,6 +20,13 @@
             android:textAppearance="?attr/textAppearanceBodySmall" />
 
         <Button
+            android:id="@+id/plus"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Plus" />
+
+        <Button
             android:id="@+id/salir"
             style="?attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
@@ -76,4 +83,12 @@
             android:layout_weight="1"
             android:text="Nuevo gasto" />
     </LinearLayout>
+
+    <!-- Banner del plan gratuito. Con Plus queda oculto. -->
+    <FrameLayout
+        android:id="@+id/anuncio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
 </LinearLayout>

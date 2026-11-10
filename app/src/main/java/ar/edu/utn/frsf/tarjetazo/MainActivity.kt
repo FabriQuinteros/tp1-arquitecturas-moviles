@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,6 +12,7 @@ import androidx.appcompat.app.AlertDialog
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import com.google.android.gms.ads.AdView
 import com.google.firebase.auth.FirebaseAuth
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -20,6 +22,9 @@ class MainActivity : ActividadRegistrada() {
     private lateinit var repo: Repositorio
     private lateinit var lista: ListView
     private lateinit var total: TextView
+    private lateinit var botonPlus: Button
+    private var banner: AdView? = null
+    private val planCambio = { mostrarPlan() }
 
     // Intent explícito con resultado: el editor devuelve el gasto y esta Activity lo guarda.
     // Mientras el editor está abierto, esta Activity queda detenida (onStop) debajo en la pila, no destruida.
@@ -55,10 +60,14 @@ class MainActivity : ActividadRegistrada() {
         repo = Repositorio(this)
         findViewById<TextView>(R.id.cuenta).text = sesion.currentUser?.email
         findViewById<Button>(R.id.salir).setOnClickListener {
+            Plus.cerrar()
             sesion.signOut()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
+        botonPlus = findViewById(R.id.plus)
+        botonPlus.setOnClickListener { startActivity(Intent(this, PlusActivity::class.java)) }
+        Plus.iniciar(this)
         lista = findViewById(R.id.lista)
         total = findViewById(R.id.total)
         lista.emptyView = findViewById(R.id.vacio)
@@ -80,6 +89,40 @@ class MainActivity : ActividadRegistrada() {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             permisoAvisos.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Plus.observar(planCambio)
+        mostrarPlan()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        banner?.resume()
+        // La suscripción se puede cancelar o renovar desde Google Play, fuera de la app.
+        Plus.refrescar()
+    }
+
+    override fun onPause() {
+        banner?.pause()
+        super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Plus.dejarDeObservar(planCambio)
+    }
+
+    override fun onDestroy() {
+        banner?.destroy()
+        super.onDestroy()
+    }
+
+    /** Con Plus desaparece el banner y el botón lo dice; sin Plus, el botón lleva a la suscripción. */
+    private fun mostrarPlan() {
+        botonPlus.text = if (Plus.activo) "Plus ✓" else "Plus"
+        banner = Anuncios.mostrar(this, findViewById<FrameLayout>(R.id.anuncio), banner)
     }
 
     private fun mostrar() {

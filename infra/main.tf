@@ -197,6 +197,67 @@ resource "google_cloud_scheduler_job" "tarea" {
   depends_on = [google_cloud_run_v2_job.tarea]
 }
 
+# ---------- Monetización: avisos de Google Play sobre las suscripciones (TP 4) ----------
+# Google Play publica en este tema cada cambio de una suscripción (compra, renovación, cancelación,
+# pago rechazado). El nombre completo del tema se carga en Play Console > Monetización > Configuración.
+
+resource "google_project_service" "android_publisher" {
+  service            = "androidpublisher.googleapis.com" # la API que el worker consulta por cada aviso
+  disable_on_destroy = false
+}
+
+resource "google_pubsub_topic" "play" { name = "play-rtdn" }
+resource "google_pubsub_topic" "play_errores" { name = "play-rtdn-errores" }
+
+# La cuenta con que Google Play publica los avisos. Es la misma para todas las apps.
+resource "google_pubsub_topic_iam_member" "play_publica" {
+  topic  = google_pubsub_topic.play.name
+  role   = "roles/pubsub.publisher"
+  member = "serviceAccount:google-play-developer-notifications@system.gserviceaccount.com"
+}
+
+resource "google_pubsub_subscription" "play_errores" {
+  name                       = "play-rtdn-errores"
+  topic                      = google_pubsub_topic.play_errores.id
+  message_retention_duration = "604800s"
+}
+
+# Mismo patrón que los consumos: push autenticado al worker, reintentos y cola de errores.
+# Un aviso perdido es un usuario que pagó y no tiene Plus, así que tampoco se descarta nada.
+resource "google_pubsub_subscription" "play_worker" {
+  name                 = "play-rtdn-worker"
+  topic                = google_pubsub_topic.play.id
+  ack_deadline_seconds = 30
+  push_config {
+    push_endpoint = "${google_cloud_run_v2_service.worker.uri}/pubsub/play"
+    oidc_token { service_account_email = google_service_account.pubsub_push.email }
+  }
+  retry_policy {
+    minimum_backoff = "10s"
+    maximum_backoff = "300s"
+  }
+  dead_letter_policy {
+    dead_letter_topic     = google_pubsub_topic.play_errores.id
+    max_delivery_attempts = 5
+  }
+}
+
+resource "google_pubsub_topic_iam_member" "play_errores_publica" {
+  topic  = google_pubsub_topic.play_errores.name
+  role   = "roles/pubsub.publisher"
+  member = local.agente_pubsub
+}
+resource "google_pubsub_subscription_iam_member" "play_errores_suscribe" {
+  subscription = google_pubsub_subscription.play_worker.name
+  role         = "roles/pubsub.subscriber"
+  member       = local.agente_pubsub
+}
+
+# La cuenta de servicio del backend no se puede autorizar en Google Play desde acá: se invita a mano
+# en Play Console > Usuarios y permisos, con permiso para ver datos financieros y administrar pedidos.
+output "cuenta_backend" { value = google_service_account.backend.email }
+output "tema_play" { value = google_pubsub_topic.play.id }
+
 # ---------- Costos: aviso de presupuesto ----------
 # Avisa por correo; no corta el servicio. El corte real lo ponen los max_instance_count de arriba.
 

@@ -1,6 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // El plan de la cuenta (usuarios/{uid}.plus): el dueño lo lee, pero solo lo escribe el backend a partir
+    // de los avisos de Google Play. Si la app pudiera escribirlo, cualquiera se daría Plus gratis.
+    match /usuarios/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+    }
     // Cada cuenta lee y escribe solo sus propios gastos.
     match /usuarios/{uid}/gastos/{gasto} {
       allow read, write: if request.auth != null && request.auth.uid == uid;

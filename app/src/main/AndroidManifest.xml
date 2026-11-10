@@ -4,6 +4,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- El SDK de anuncios agrega el ID de publicidad y las APIs de Privacy Sandbox (temas de interés,
+         atribución), que sirven para personalizar anuncios. Se sacan: los de Tarjetazo son no personalizados. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS" tools:node="remove" />
 
     <application
         android:allowBackup="false"
@@ -14,6 +20,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Tarjetazo">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -34,6 +43,9 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".DeudasActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PlusActivity"
             android:exported="false" />
         <service
             android:name=".Avisos"

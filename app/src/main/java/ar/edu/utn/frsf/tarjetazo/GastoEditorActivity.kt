@@ -32,6 +32,15 @@ class GastoEditorActivity : ActividadRegistrada() {
         // Con estado guardado el sistema ya restauró los campos; sin él, se parte del borrador persistido.
         if (savedInstanceState == null) campos.forEach { (campo, vista) -> vista.setText(repo.leerBorrador(campo)) }
 
+        // Los gastos en dólares son de Plus: sin el plan, marcar la casilla lleva a la suscripción.
+        Plus.iniciar(this)
+        findViewById<CheckBox>(R.id.en_dolares).setOnCheckedChangeListener { casilla, marcada ->
+            if (marcada && !Plus.activo) {
+                casilla.isChecked = false
+                ofrecerPlus()
+            }
+        }
+
         findViewById<Button>(R.id.guardar).setOnClickListener { guardar() }
         findViewById<Button>(R.id.cancelar).setOnClickListener { terminar(RESULT_CANCELED, null) }
     }
@@ -50,6 +59,7 @@ class GastoEditorActivity : ActividadRegistrada() {
         runCatching { parseDivision(division) }.onFailure { return avisar(it.message.orEmpty()) }
 
         if (!findViewById<CheckBox>(R.id.en_dolares).isChecked) return devolver(comercio, importe, division, false)
+        if (!Plus.activo) return ofrecerPlus()
 
         // Firestore responde de forma asincrónica y llama de vuelta en el hilo principal.
         val boton = findViewById<Button>(R.id.guardar).apply { isEnabled = false }
@@ -60,6 +70,11 @@ class GastoEditorActivity : ActividadRegistrada() {
                 .onFailure { avisar("Todavía no hay cotización del dólar. Probá con conexión.") }
         }
     }
+
+    private fun ofrecerPlus() = startActivity(
+        Intent(this, PlusActivity::class.java)
+            .putExtra(PlusActivity.MOTIVO, "Los gastos en dólares, convertidos al dólar tarjeta del día, son parte de Plus."),
+    )
 
     private fun devolver(comercio: String, importe: BigDecimal, division: String, enDolares: Boolean) = terminar(
         RESULT_OK,
