@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Avisos"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="Como mucho un aviso por día. Elegí cuáles querés recibir."
+            android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/aviso_cierre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tres días antes del cierre de la tarjeta, para revisar y dividir los gastos" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Día de cierre de tu tarjeta" />
+
+        <EditText
+            android:id="@+id/dia_cierre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="2" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/aviso_resumen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="El día 1, el resumen del mes anterior: cuánto se gastó y quién te debe más" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/aviso_inactividad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Si pasa una semana sin que abras la app, un recordatorio para anotar lo que gastaste" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/aviso_novedades"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Novedades de Tarjetazo (funciones nuevas, consejos)" />
+
+        <Button
+            android:id="@+id/guardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Guardar" />
+
+        <TextView
+            android:id="@+id/estado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAppearance="?attr/textAppearanceBodySmall" />
+    </LinearLayout>
+</ScrollView>

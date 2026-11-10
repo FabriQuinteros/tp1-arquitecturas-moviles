@@ -62,7 +62,8 @@ class LoginActivity : ActividadRegistrada() {
     }
 
     private fun abrirGastos() {
-        startActivity(Intent(this, MainActivity::class.java))
+        // Si se llegó tocando un aviso, el destino sigue hasta la lista de gastos, que abre esa pantalla.
+        startActivity(Intent(this, MainActivity::class.java).putExtra(DESTINO, intent.getStringExtra(DESTINO)))
         finish()
     }
 

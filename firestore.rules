@@ -3,8 +3,18 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // El plan de la cuenta (usuarios/{uid}.plus): el dueño lo lee, pero solo lo escribe el backend a partir
     // de los avisos de Google Play. Si la app pudiera escribirlo, cualquiera se daría Plus gratis.
+    // Desde el TP 6 la app también escribe ahí sus preferencias de avisos y la fecha de la última apertura,
+    // pero nada más: ni el plan ni el estado de los avisos, que maneja el backend.
     match /usuarios/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['avisos', 'ultimaApertura']);
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['avisos', 'ultimaApertura']);
+    }
+    // Los teléfonos de la cuenta, para los avisos individuales. El id es el token de Cloud Messaging.
+    match /usuarios/{uid}/dispositivos/{token} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
     }
     // Cada cuenta lee y escribe solo sus propios gastos.
     match /usuarios/{uid}/gastos/{gasto} {

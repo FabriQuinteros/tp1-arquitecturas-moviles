@@ -17,7 +17,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:ellipsize="end"
+            android:singleLine="true"
             android:textAppearance="?attr/textAppearanceBodySmall" />
+
+        <Button
+            android:id="@+id/avisos"
+            style="?attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Avisos" />
 
         <Button
             android:id="@+id/plus"
@@ -40,9 +49,23 @@
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceHeadlineSmall" />
 
+    <!-- Racha y resumen del mes: contenido personalizado para que el usuario vea su progreso. -->
+    <TextView
+        android:id="@+id/progreso"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?attr/colorSecondaryContainer"
+        android:lineSpacingExtra="4dp"
+        android:padding="12dp"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        android:visibility="gone" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="Mantené apretado un gasto para eliminarlo."
         android:textAppearance="?attr/textAppearanceBodySmall" />

@@ -47,6 +47,10 @@
         <activity
             android:name=".PlusActivity"
             android:exported="false" />
+        <activity
+            android:name=".AvisosActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <service
             android:name=".Avisos"
             android:exported="false">

@@ -149,10 +149,10 @@ resource "google_cloud_run_v2_service_iam_member" "push_invoca_worker" {
   member   = "serviceAccount:${google_service_account.pubsub_push.email}"
 }
 
-# ---------- Tareas programadas: cotización y recordatorio ----------
+# ---------- Tareas programadas: cotización y avisos personalizados (TP 6) ----------
 
 resource "google_cloud_run_v2_job" "tarea" {
-  for_each = toset(["cotizacion", "recordatorio"])
+  for_each = toset(["cotizacion", "avisos"])
   name     = "tarjetazo-${each.key}"
   location = var.region
   template {
@@ -183,7 +183,7 @@ resource "google_cloud_run_v2_job_iam_member" "scheduler_ejecuta" {
 resource "google_cloud_scheduler_job" "tarea" {
   for_each = {
     cotizacion   = "*/30 * * * *"  # cada 30 minutos
-    recordatorio = "0 10 20-24 * *" # 10 h, del 20 al 24: antes del cierre más común
+    avisos     = "0 10 * * *"     # 10 h, todos los días: la tarea decide a quién le toca qué aviso
   }
   name      = "tarjetazo-${each.key}"
   region    = var.region
