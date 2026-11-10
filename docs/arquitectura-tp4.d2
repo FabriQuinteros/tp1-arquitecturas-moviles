@@ -1,0 +1,65 @@
+# Diagrama de contenedores (modelo C4) con la estrategia de monetización.
+direction: down
+vars: {d2-config: {layout-engine: elk}}
+classes: {
+  propio: {style: {fill: "#1168bd"; stroke: "#0b4884"; font-color: "#ffffff"; border-radius: 6}}
+  nuevo: {style: {fill: "#2e7d32"; stroke: "#1b5e20"; font-color: "#ffffff"; border-radius: 6}}
+  externo: {style: {fill: "#8a8a8a"; stroke: "#6b6b6b"; font-color: "#ffffff"; border-radius: 6}}
+  zona: {style: {fill: "#fffaf0"; stroke: "#c98a00"; stroke-dash: 4; border-radius: 10; font-color: "#7a5300"}}
+}
+
+titular: "Titular de la tarjeta\n[Persona · plan gratuito o Plus]" {style: {fill: "#08427b"; font-color: "#ffffff"; border-radius: 20}}
+
+app: "App Tarjetazo [Android · Kotlin]" {
+  style: {fill: "#f4f8fc"; stroke: "#1168bd"; stroke-dash: 4; border-radius: 10}
+  ui: "Activities\n[lista · carga · deudas]" {class: propio}
+  paywall: "PlusActivity\n[planes y precios de Play]" {class: nuevo}
+  plus: "Plus\n[Play Billing Library 9]\n¿tiene Plus? compra · confirma" {class: nuevo}
+  anuncios: "Anuncios\n[Google Mobile Ads SDK]\n1 banner, no personalizado" {class: nuevo}
+  sdk: "SDKs de Firebase\n[Auth · Firestore · Messaging]" {class: propio}
+
+  ui -> paywall: "botón Plus o\ngasto en dólares"
+  paywall -> plus: "comprar(plan)"
+  ui -> anuncios: "solo sin Plus"
+  ui -> sdk
+  ui -> plus: "observa el estado"
+}
+
+play: "Google Play [externo]" {
+  class: zona
+  tienda: "App Play Store\n[en el teléfono]\nhoja de pago" {class: externo}
+  facturacion: "Facturación de Google Play\n[cobra, renueva, reintenta]" {class: externo}
+  consola: "Play Console\n[suscripción plus: mensual · anual\nprueba 14 días · precios en ARS]" {class: externo}
+  publisher: "Google Play Developer API\n[subscriptionsv2.get · acknowledge]" {class: externo}
+}
+
+admob: "AdMob\n[red de anuncios de Google]" {class: externo}
+
+gcp: "Google Cloud · southamerica-east1" {
+  class: zona
+  rtdn: "Pub/Sub · play-rtdn\n[avisos de Google Play]" {shape: queue; class: nuevo}
+  errores: "Pub/Sub · play-rtdn-errores\n[a los 5 intentos]" {shape: queue; class: externo}
+  worker: "Worker · Cloud Run\n[POST /pubsub/play]\nestado de la suscripción" {class: nuevo}
+  resto: "API, cola de consumos y tareas\n[TP 3, sin cambios]" {class: propio}
+}
+
+firebase: "Firebase" {
+  class: zona
+  fs: "Cloud Firestore\n[usuarios/{uid}.plus · gastos · cotizaciones]" {shape: cylinder; class: propio}
+  auth: "Authentication" {class: propio}
+}
+
+titular -> app.ui: "usa"
+app.plus -> play.tienda: "AIDL · Billing Library\nproductos, compra, compras activas"
+play.tienda -> play.facturacion: "HTTPS"
+play.consola -> play.facturacion: "configura productos y precios" {style.stroke-dash: 3}
+play.facturacion -> gcp.rtdn: "publica cada cambio\n(compra, renovación, cancelación)" {style: {stroke: "#2e7d32"; stroke-width: 2}}
+gcp.rtdn -> gcp.worker: "push HTTPS + OIDC\nreintentos"
+gcp.rtdn -> gcp.errores: "mensajes que fallan" {style.stroke-dash: 3}
+gcp.worker -> play.publisher: "HTTPS · REST\npregunta el estado real"
+gcp.worker -> firebase.fs: "transacción · escribe plus"
+app.plus -> firebase.fs: "escucha usuarios/{uid}.plus\n(SDK de Firestore)"
+app.sdk -> firebase.fs: "gRPC · gastos"
+app.sdk -> firebase.auth: "HTTPS"
+app.anuncios -> admob: "HTTPS · pide banner\nnpa=1, sin ID de publicidad"
+gcp.resto -> firebase.fs
