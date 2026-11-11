@@ -34,6 +34,14 @@ sobre todo, el **porcentaje de semanas con al menos un gasto cargado** por usuar
 directamente el hábito. La fecha de última apertura que guarda la app en Firestore (sección 3)
 alcanza para calcular las dos.
 
+**Qué dice la bibliografía.** El libro de la cátedra define la retención como cuántas veces los usuarios
+vuelven a abrir la app en un período, y advierte que una app que no se abre al menos una vez por semana
+tiene un 60 % de probabilidad de ser olvidada (van Drongelen et al., 2017, p. 374). Propone como palancas
+una entrada con poca fricción, contenido nuevo y relevante, personalización, incentivos y notificaciones
+push, con una condición: no hacer spam. Eso significa segmentar, cuidar la frecuencia y averiguar qué
+mensajes funcionan mejor antes de automatizarlos (pp. 374–376). Las cuatro estrategias siguientes se
+apoyan en esas ideas.
+
 ## 2. Estrategias
 
 | # | Estrategia | Tipo | Qué hace | Métrica que la evalúa |
@@ -50,7 +58,9 @@ que llega en el momento equivocado enseña a ignorar los avisos.
 
 **Lo que se evitó a propósito.** Puntos, medallas o rankings entre usuarios: comparar cuánto gasta
 cada uno no tiene sentido en una app de gastos personales y empuja a cargar datos falsos. La racha
-premia el hábito, no el gasto.
+premia el hábito, no el gasto. El libro distingue la gamificación, que da incentivos digitales como
+insignias, de los incentivos reales fuera de la app, como un café de regalo (pp. 374–375). La racha es
+de la primera clase y no promete premios ni compara a nadie.
 
 ## 3. Implementación de notificaciones push
 
@@ -148,6 +158,17 @@ La prueba mostró un detalle: un mensaje de la consola que no indica canal caía
 de Android. Se declaró `novedades` como canal por defecto en el manifiesto, así esos mensajes
 quedan en el canal que el usuario puede silenciar desde los ajustes.
 
+**Campaña publicada al tema.** Después se publicó la campaña desde la consola con destino al tema
+`novedades`, sin token de por medio. En la consola figura como completada, con segmentación `novedades`
+y menos de 1.000 envíos:
+
+![La campaña en la consola de Firebase: completada, segmentada por el tema novedades](capturas-tp6/8-consola-campania-completada.png)
+
+La recibió un teléfono real, un Samsung con Android 13 donde la app se suscribió al iniciar, y la mostró
+en la barra de notificaciones con el nombre de la app y su ícono:
+
+![La campaña publicada al tema, recibida en un teléfono real](capturas-tp6/7-campania-recibida-en-telefono.jpg)
+
 ## 5. Pruebas
 
 | Prueba | Resultado |
@@ -155,7 +176,7 @@ quedan en el canal que el usuario puede silenciar desde los ajustes.
 | Compilación (`assembleDebug`) | Compila. |
 | Pruebas unitarias de la app | 19 pasan. `RetencionTest` (6): racha con huecos, racha viva hasta el domingo, varios gastos en la misma semana, resumen del mes con quién debe más, mes sin gastos y días hasta el cierre (incluido un cierre día 31 en un mes de 30). |
 | Pruebas del backend (`pytest`) | 20 pasan. `test_retencion.py` (13): las mismas reglas que la app, prioridad entre avisos, recordatorio a la semana justa, tope de tres sin respuesta, reinicio del contador al volver, preferencias apagadas y segmento de reactivación. |
-| Envío real con Cloud Messaging | La campaña de la consola llegó al emulador (sección 4). |
+| Envío real con Cloud Messaging | El mensaje de prueba de la consola llegó al emulador, y la campaña publicada al tema `novedades` llegó a un teléfono real (sección 4). |
 | Emulador (Android 17) | Al cargar el primer gasto aparece la tarjeta con la racha y el resumen, y el pedido de permiso con su explicación. Las preferencias se guardan. Abrir la app con `destino=deudas` lleva a Deudas, y con `destino=nuevo_gasto`, a la carga de un gasto. |
 
 ![Lista con la racha y el resumen del mes](capturas-tp6/1-lista-con-progreso.png)
@@ -163,11 +184,13 @@ quedan en el canal que el usuario puede silenciar desde los ajustes.
 ![Preferencias de avisos](capturas-tp6/3-preferencias.png)
 ![Un aviso de cierre abre Deudas](capturas-tp6/4-aviso-abre-deudas.png)
 
-**Qué no se pudo probar.** El envío por Cloud Messaging se probó desde la consola, pero la tarea
+**Qué no se pudo probar.** El envío por Cloud Messaging se probó desde la consola, tanto a un token como al tema, pero la tarea
 diaria que manda los avisos personalizados necesita la cuenta de servicio del proyecto y el backend
 desplegado, que sigue sin desplegarse desde el TP 3. En local, sin credenciales, `tareas.py`
 imprime los avisos en lugar de mandarlos. Las reglas de Firestore y
 `infra/main.tf` tampoco se validaron con sus emuladores ni con `tofu validate`.
+
+<div class="pagina-diagrama" markdown="1">
 
 ## 6. Arquitectura actualizada
 
@@ -179,3 +202,10 @@ Google Cloud: el Scheduler dispara el job diario, que lee preferencias y gastos 
 un aviso por usuario y se lo manda a cada uno de sus teléfonos por Cloud Messaging. Las campañas
 para todos salen de la consola de Firebase hacia el tema `novedades`. En el teléfono todo entra por
 el mismo servicio, `Avisos`, que lo muestra en su canal y, al tocarlo, abre la pantalla que propone.
+
+</div>
+
+## Bibliografía
+
+- van Drongelen, M., Dennis, A., Garabedian, R., Gonzalez, A. y Krishnaswamy, A. (2017). *Lean Mobile App Development*. Packt.
+- Cátedra Arquitecturas Móviles, UTN FRSF. *Guía de Trabajos Prácticos — Trabajo Práctico 6: Estrategias de Retención de Usuarios.*
